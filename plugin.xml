@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  
+  <!--
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            base-type="org.eclipse.wst.html.core.htmlsource"
+            file-extensions="html"
+            id="asta4d.template"
+            name="asta4d template editor"
+            priority="high">
+         <describer
+               class="com.astamuse.asta4d.ide.eclipse.contenttype.ContentDescriberForAsta4d">
+         </describer>
+      </content-type>
+   </extension>
+   -->
+   
+    <extension point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+       <hyperlinkDetector
+             class="com.astamuse.asta4d.ide.eclipse.hyperlink.Asta4dHyperLinkDetector"
+             id="asta4d.hyperlink"
+             name="asta4d hyper link detector"
+             targetId="org.eclipse.wst.html.core.htmlsource">
+       </hyperlinkDetector>
+    </extension>
+
+</plugin>

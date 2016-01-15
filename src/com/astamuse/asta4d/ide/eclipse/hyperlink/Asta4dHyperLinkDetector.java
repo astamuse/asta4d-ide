@@ -1,0 +1,208 @@
+package com.astamuse.asta4d.ide.eclipse.hyperlink;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
+import org.eclipse.wst.sse.core.internal.provisional.IndexedRegion;
+import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
+import org.eclipse.wst.sse.core.utils.StringUtils;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
+import org.w3c.dom.Attr;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
+import com.astamuse.asta4d.ide.eclipse.util.Introspector;
+import com.astamuse.asta4d.ide.eclipse.util.JdtUtils;
+
+public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
+
+    @Override
+    public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
+        // TODO Auto-generated method stub
+        IDocument doc = textViewer.getDocument();
+        Node currentNode = getNodeByOffset(doc, region.getOffset());
+        if (currentNode == null) {
+            return null;
+        }
+
+        if (currentNode.getNodeType() != Node.ELEMENT_NODE) {
+            return null;
+        }
+
+        // at first try to handle selected attribute value
+        Attr currentAttr = getAttrByOffset(currentNode, region.getOffset());
+        IDOMAttr attr = (IDOMAttr) currentAttr;
+        if (currentAttr != null && region.getOffset() >= attr.getValueRegionStartOffset()) {
+            if (isLinkableAttr(currentNode, currentAttr)) {
+                IRegion hyperlinkRegion = getHyperlinkRegion(currentAttr);
+                IHyperlink hyperLink = createHyperlink(currentAttr.getName(), currentAttr.getNodeValue(), currentNode,
+                        currentNode.getParentNode(), doc, textViewer, hyperlinkRegion, region);
+                if (hyperLink != null) {
+                    return new IHyperlink[] { hyperLink };
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the node from given document at specified offset.
+     * 
+     * @param offset
+     *            the offset with given document
+     * @return Node either element, doctype, text, or null
+     */
+    public final Node getNodeByOffset(IDocument document, int offset) {
+        // get the node at offset (returns either: element, doctype, text)
+        IndexedRegion inode = null;
+        IStructuredModel sModel = null;
+        try {
+            sModel = org.eclipse.wst.sse.core.StructuredModelManager.getModelManager().getExistingModelForRead(document);
+            if (sModel == null && document instanceof IStructuredDocument) {
+                sModel = org.eclipse.wst.sse.core.StructuredModelManager.getModelManager().getModelForRead((IStructuredDocument) document);
+            }
+            inode = sModel.getIndexedRegion(offset);
+            if (inode == null) {
+                inode = sModel.getIndexedRegion(offset - 1);
+            }
+        } finally {
+            if (sModel != null) {
+                sModel.releaseFromRead();
+            }
+        }
+
+        if (inode instanceof Node) {
+            return (Node) inode;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the attribute from given node at specified offset.
+     */
+    public final Attr getAttrByOffset(Node node, int offset) {
+        if ((node instanceof IndexedRegion) && ((IndexedRegion) node).contains(offset) && (node.hasAttributes())) {
+            NamedNodeMap attrs = node.getAttributes();
+            // go through each attribute in node and if attribute contains
+            // offset, return that attribute
+            for (int i = 0; i < attrs.getLength(); ++i) {
+                // assumption that if parent node is of type IndexedRegion,
+                // then its attributes will also be of type IndexedRegion
+                IndexedRegion attRegion = (IndexedRegion) attrs.item(i);
+                if (attRegion.contains(offset)) {
+                    return (Attr) attrs.item(i);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean isLinkableAttr(Node node, Attr attr) {
+        if (node.getNodeName().startsWith("afd:")) {
+            return attr.getName().equalsIgnoreCase("render");
+        } else {
+            return attr.getName().equalsIgnoreCase("afd:render");
+        }
+    }
+
+    public IRegion getHyperlinkRegion(Node node) {
+        if (node != null) {
+            switch (node.getNodeType()) {
+            case Node.DOCUMENT_TYPE_NODE:
+            case Node.TEXT_NODE:
+                IDOMNode docNode = (IDOMNode) node;
+                return new Region(docNode.getStartOffset(), docNode.getEndOffset() - docNode.getStartOffset());
+
+            case Node.ELEMENT_NODE:
+                IDOMElement element = (IDOMElement) node;
+                int endOffset;
+                if (element.hasEndTag() && element.isClosed()) {
+                    endOffset = element.getStartEndOffset();
+                } else {
+                    endOffset = element.getEndOffset();
+                }
+                return new Region(element.getStartOffset(), endOffset - element.getStartOffset());
+
+            case Node.ATTRIBUTE_NODE:
+                IDOMAttr att = (IDOMAttr) node;
+                // do not include quotes in attribute value region
+                int regOffset = att.getValueRegionStartOffset();
+                int regLength = att.getValueRegionText().length();
+                String attValue = att.getValueRegionText();
+                if (StringUtils.isQuoted(attValue)) {
+                    regOffset += 1;
+                    regLength = regLength - 2;
+                }
+                return new Region(regOffset, regLength);
+            }
+        }
+        return null;
+    }
+
+    public IHyperlink createHyperlink(String name, String target, Node node, Node parentNode, IDocument document, ITextViewer textViewer,
+            IRegion hyperlinkRegion, IRegion cursor) {
+        IFile file = getFile(document);
+        IProject prj = file.getProject();
+        String[] declareInfo = target.split("::|:");
+        String snippetClass, snippetMethod;
+        if (declareInfo.length < 2) {
+            snippetClass = declareInfo[0];
+            snippetMethod = "render";
+        } else {
+            snippetClass = declareInfo[0];
+            snippetMethod = declareInfo[1];
+        }
+        snippetClass = "net.xzer.snippet." + snippetClass;
+        IType type = JdtUtils.getJavaType(file.getProject(), snippetClass);
+        try {
+            IMethod method = Introspector.findMethod(type, snippetMethod);
+            if (method != null) {
+                return new JavaElementHyperlink(hyperlinkRegion, method);
+            }
+        } catch (JavaModelException e) {
+        }
+        return null;
+    }
+
+    public final IFile getFile(IDocument document) {
+        IFile resource = null;
+        String baselocation = null;
+        if (document != null) {
+            IStructuredModel model = null;
+            try {
+                model = org.eclipse.wst.sse.core.StructuredModelManager.getModelManager().getExistingModelForRead(document);
+                if (model != null) {
+                    baselocation = model.getBaseLocation();
+                }
+            } finally {
+                if (model != null) {
+                    model.releaseFromRead();
+                }
+            }
+        }
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        if (baselocation != null) {
+            IPath path = new Path(baselocation);
+            if (root.exists(path) && path.segmentCount() > 1) {
+                resource = root.getFile(path);
+            }
+        }
+        return resource;
+    }
+
+}
