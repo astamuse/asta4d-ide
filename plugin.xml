@@ -26,5 +26,16 @@
              targetId="org.eclipse.wst.html.core.htmlsource">
        </hyperlinkDetector>
     </extension>
+    
+    <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            id="asta4d.Asta4dProjectPropertyPage"
+            class="com.astamuse.asta4d.ide.eclipse.property.Asta4dProjectPropertyPage"
+            name="Asta4d"
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true">
+      </page>
+   </extension>
 
 </plugin>

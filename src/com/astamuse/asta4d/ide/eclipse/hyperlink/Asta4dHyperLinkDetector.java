@@ -26,6 +26,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.astamuse.asta4d.ide.eclipse.property.Asta4dPreference;
+import com.astamuse.asta4d.ide.eclipse.property.Asta4dProperties;
 import com.astamuse.asta4d.ide.eclipse.util.Introspector;
 import com.astamuse.asta4d.ide.eclipse.util.JdtUtils;
 
@@ -33,8 +35,20 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
 
     @Override
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-        // TODO Auto-generated method stub
         IDocument doc = textViewer.getDocument();
+
+        IFile file = getFile(doc);
+        IProject prj = file.getProject();
+
+        // we only available on java project
+        /*
+        if (prj instanceof IJavaProject) {
+            // it is OK
+        } else {
+            return null;
+        }
+        */
+
         Node currentNode = getNodeByOffset(doc, region.getOffset());
         if (currentNode == null) {
             return null;
@@ -50,7 +64,7 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
         if (currentAttr != null && region.getOffset() >= attr.getValueRegionStartOffset()) {
             if (isLinkableAttr(currentNode, currentAttr)) {
                 IRegion hyperlinkRegion = getHyperlinkRegion(currentAttr);
-                IHyperlink hyperLink = createHyperlink(currentAttr.getName(), currentAttr.getNodeValue(), currentNode,
+                IHyperlink hyperLink = createHyperlink(prj, currentAttr.getName(), currentAttr.getNodeValue(), currentNode,
                         currentNode.getParentNode(), doc, textViewer, hyperlinkRegion, region);
                 if (hyperLink != null) {
                     return new IHyperlink[] { hyperLink };
@@ -154,10 +168,8 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
         return null;
     }
 
-    public IHyperlink createHyperlink(String name, String target, Node node, Node parentNode, IDocument document, ITextViewer textViewer,
-            IRegion hyperlinkRegion, IRegion cursor) {
-        IFile file = getFile(document);
-        IProject prj = file.getProject();
+    public IHyperlink createHyperlink(IProject prj, String name, String target, Node node, Node parentNode, IDocument document,
+            ITextViewer textViewer, IRegion hyperlinkRegion, IRegion cursor) {
         String[] declareInfo = target.split("::|:");
         String snippetClass, snippetMethod;
         if (declareInfo.length < 2) {
@@ -167,14 +179,20 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
             snippetClass = declareInfo[0];
             snippetMethod = declareInfo[1];
         }
-        snippetClass = "net.xzer.snippet." + snippetClass;
-        IType type = JdtUtils.getJavaType(file.getProject(), snippetClass);
-        try {
-            IMethod method = Introspector.findMethod(type, snippetMethod);
-            if (method != null) {
-                return new JavaElementHyperlink(hyperlinkRegion, method);
+        Asta4dProperties properties = Asta4dPreference.get(prj).loadProperties();
+        for (String prefix : properties.getSnippetPrefixes()) {
+            String searchName = prefix + snippetClass;
+            IType type = JdtUtils.getJavaType(prj, searchName);
+            if (type == null) {
+                continue;
             }
-        } catch (JavaModelException e) {
+            try {
+                IMethod method = Introspector.findMethod(type, snippetMethod);
+                if (method != null) {
+                    return new JavaElementHyperlink(hyperlinkRegion, method);
+                }
+            } catch (JavaModelException e) {
+            }
         }
         return null;
     }
