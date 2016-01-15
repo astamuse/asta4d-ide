@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.astamuse.asta4d.ide.eclipse.feature_0.5.0.qualifier.jar" id="com.astamuse.asta4d.ide.eclipse.feature" version="0.5.0.qualifier"/>
+   <feature url="features/com.astamuse.asta4d.ide.eclipse.feature_0.5.0.qualifier.jar" id="com.astamuse.asta4d.ide.eclipse.feature" version="0.5.0.qualifier">
+      <category name="com.astamuse.asta4d.ide.eclipse.category"/>
+   </feature>
+   <category-def name="com.astamuse.asta4d.ide.eclipse.category" label="asta4d"/>
 </site>
