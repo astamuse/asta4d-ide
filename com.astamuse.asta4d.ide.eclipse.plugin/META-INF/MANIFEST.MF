@@ -20,3 +20,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/commons-lang3-3.4.jar
+Bundle-Vendor: https://github.com/astamuse/asta4d-ide
