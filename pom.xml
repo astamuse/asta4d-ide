@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.astamuse</groupId>
+  <artifactId>asta4d.ide.eclipse</artifactId>
+  <version>0.5.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <properties>
+    <tycho>0.24.0</tycho>
+    <eclipse>http://download.eclipse.org/releases/mars/</eclipse>
+    <ajdt>http://download.eclipse.org/tools/ajdt/45/dev/update</ajdt>
+  </properties>
+  <repositories>
+    <repository>
+        <id>mars</id>
+        <layout>p2</layout>
+        <url>${eclipse}</url>
+    </repository>
+    <repository>
+        <id>ajdt</id>
+        <layout>p2</layout>
+        <url>${ajdt}</url>
+    </repository>
+  </repositories>
+  <modules>
+    <module>com.astamuse.asta4d.ide.eclipse.feature</module>
+    <module>com.astamuse.asta4d.ide.eclipse.plugin</module>
+    <module>com.astamuse.asta4d.ide.eclipse.updatesite</module>
+  </modules>
+  <build>
+    <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-maven-plugin</artifactId>
+          <version>${tycho}</version>
+          <extensions>true</extensions>
+        </plugin>
+    </plugins>
+  </build>
+</project>
