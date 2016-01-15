@@ -8,14 +8,14 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.wst.sse.core;bundle-version="1.1.900",
- org.eclipse.wst.html.core;bundle-version="1.1.802",
- org.eclipse.wst.xml.core;bundle-version="1.1.902",
- org.eclipse.core.resources;bundle-version="3.10.1",
- org.eclipse.jdt.core;bundle-version="3.11.1",
- org.eclipse.jdt.ui;bundle-version="3.11.1",
- org.eclipse.contribution.weaving.jdt;bundle-version="2.2.3";resolution:=optional,
- org.eclipse.ajdt.core;bundle-version="2.2.4";resolution:=optional
+ org.eclipse.wst.sse.core,
+ org.eclipse.wst.html.core,
+ org.eclipse.wst.xml.core,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.contribution.weaving.jdt;resolution:=optional,
+ org.eclipse.ajdt.core;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
