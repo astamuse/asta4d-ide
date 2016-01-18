@@ -1,11 +1,13 @@
 # Asta4d IDE
 
-This project is for the purpose of better developing support for Asta4d users, be planning to contains following features:
+This project is for the purpose of better developing support for Asta4d users, contains following features:
 
-- hyper link in template file, includes sninpet method, extension parent and embed target.
-- find reference to include snippet declaration
+- snippet method navigation in template file (DONE)
+- extension parent navigation (TODO)
+- embed target navigation (TODO)
+- find reference for snippet method to include snippet declaration (DEVELOPING)
 
-Currently in prototype stage.
+More features can be required :-)
 
 ## LICENSE
 
