@@ -64,10 +64,10 @@
             </separator>
          </menu>
          <action
-               label="Asta4dAction"
+               label="Snippet In Templates..."
                class="com.astamuse.asta4d.ide.eclipse.action.Asta4dSearchAction"
                menubarPath="asta4d.menu1/group1"
-               enablesFor="*"
+               enablesFor="+"
                id="Asta4d.newAction">
          </action>
       </viewerContribution>

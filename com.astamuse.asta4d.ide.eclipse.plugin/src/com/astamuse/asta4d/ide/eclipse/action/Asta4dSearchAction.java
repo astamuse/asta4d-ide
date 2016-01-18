@@ -23,7 +23,7 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
 
     @Override
     public void run(IAction action) {
-        System.out.println("I am here");
+        // System.out.println("I am here");
         if (editor == null) {
             return;// do nothing
         }
@@ -46,7 +46,7 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
             e.printStackTrace(System.err);
         }
 
-        System.out.println("I got selection");
+        // System.out.println("I got selection");
     }
 
     @Override
