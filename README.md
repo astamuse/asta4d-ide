@@ -9,6 +9,10 @@ This project is for the purpose of better developing support for Asta4d users, c
 
 More features can be required :-)
 
+# Update site
+
+https://astamuse.github.io/asta4d-ide/updatesite
+
 ## LICENSE
 
 Apache License, Version 2.0
