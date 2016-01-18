@@ -2,6 +2,17 @@
 <?eclipse version="3.4"?>
 <plugin>
   
+    <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            id="asta4d.Asta4dProjectPropertyPage"
+            class="com.astamuse.asta4d.ide.eclipse.property.Asta4dProjectPropertyPage"
+            name="Asta4d"
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true">
+      </page>
+   </extension>
+  
   <!--
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
@@ -27,15 +38,49 @@
        </hyperlinkDetector>
     </extension>
     
+    <!--
     <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            id="asta4d.Asta4dProjectPropertyPage"
-            class="com.astamuse.asta4d.ide.eclipse.property.Asta4dProjectPropertyPage"
-            name="Asta4d"
-            objectClass="org.eclipse.core.resources.IProject"
-            adaptable="true">
-      </page>
+         point="org.eclipse.jdt.ui.queryParticipants">
+      <queryParticipant
+            class="com.astamuse.asta4d.ide.eclipse.search.backup.Asta4dQueryParticipant"
+            id="asta4d.search.queryParticipant"
+            name="Asta4d Query Participant"
+            nature="org.eclipse.jdt.core.javanature">
+    </queryParticipant>
+   </extension>
+   -->
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="#CompilationUnitEditorContext"
+            id="asta4d.contribution">
+         <menu
+               label="Asta4D"
+               path="additions"
+               id="asta4d.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="Asta4dAction"
+               class="com.astamuse.asta4d.ide.eclipse.action.Asta4dSearchAction"
+               menubarPath="asta4d.menu1/group1"
+               enablesFor="*"
+               id="Asta4d.newAction">
+         </action>
+      </viewerContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            id="asta4d.SnippetMethodSearchResultPage"
+            searchResultClass="com.astamuse.asta4d.ide.eclipse.search.SnippetMethodSearchResult"
+            helpContextId="org.eclipse.jdt.ui.java_search_result"
+            class="com.astamuse.asta4d.ide.eclipse.search.SnippetMethodSearchResultPage">
+      </viewPage>
    </extension>
 
 </plugin>
