@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.ide.eclipse.search;
+package com.astamuse.asta4d.ide.eclipse.search.backup;
 
 import java.text.MessageFormat;
 
@@ -86,6 +86,9 @@ public class SnippetMethodSearchResult extends AbstractTextSearchResult implemen
             if (input instanceof IFileEditorInput) {
                 return ((IFileEditorInput) input).getFile();
             }
+        }
+        if (element instanceof IFile) {
+            return (IFile) element;
         }
         return null;
     }

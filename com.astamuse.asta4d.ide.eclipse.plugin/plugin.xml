@@ -72,15 +72,5 @@
          </action>
       </viewerContribution>
    </extension>
-   
-   <extension
-         point="org.eclipse.search.searchResultViewPages">
-      <viewPage
-            id="asta4d.SnippetMethodSearchResultPage"
-            searchResultClass="com.astamuse.asta4d.ide.eclipse.search.SnippetMethodSearchResult"
-            helpContextId="org.eclipse.jdt.ui.java_search_result"
-            class="com.astamuse.asta4d.ide.eclipse.search.SnippetMethodSearchResultPage">
-      </viewPage>
-   </extension>
 
 </plugin>
