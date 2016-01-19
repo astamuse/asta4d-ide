@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.ui.actions.SelectionConverter;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.search.internal.ui.text.FileSearchQuery;
@@ -58,6 +59,7 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
             if (elements.length > 0) {
                 IJavaElement element = elements[0];
                 if (element.getElementType() != IJavaElement.METHOD) {
+                    MessageDialog.openError(shell, "Wrong search", "Can only search for method.");
                     return;
                 }
                 IMethod method = (IMethod) element;
