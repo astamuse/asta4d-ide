@@ -13,6 +13,8 @@ public class Asta4dPreference {
 
     private static final String DEFAULT_PREFIX = "com.astamuse.asta4d.sample.snippet.";
 
+    private static final String DEFAULT_NAMESPACE = "afd";
+
     private IEclipsePreferences pref;
 
     private Asta4dPreference(IEclipsePreferences pref) {
@@ -28,11 +30,13 @@ public class Asta4dPreference {
     public Asta4dProperties loadProperties() {
         Asta4dProperties properties = new Asta4dProperties();
         properties.setSnippetPrefixes(getStoredPrefixes());
+        properties.setNamespace(getStoredNamespace());
         return properties;
     }
 
     public void storeProperties(Asta4dProperties properties) {
         storePrefixes(properties.getSnippetPrefixes());
+        storeNamespace(properties.getNamespace());
         try {
             this.pref.flush();
         } catch (BackingStoreException e) {
@@ -48,5 +52,13 @@ public class Asta4dPreference {
     private void storePrefixes(String[] prefixes) {
         String str = StringUtils.join(prefixes, ",");
         this.pref.put("snippet.prefixes", str);
+    }
+
+    private String getStoredNamespace() {
+        return this.pref.get("template.namespace", DEFAULT_NAMESPACE);
+    }
+
+    private void storeNamespace(String namespace) {
+        this.pref.put("template.namespace", namespace);
     }
 }

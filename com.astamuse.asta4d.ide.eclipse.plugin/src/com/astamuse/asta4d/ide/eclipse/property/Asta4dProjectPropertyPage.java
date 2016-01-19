@@ -28,6 +28,8 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
 
     private Text prefixText;
 
+    private Text namespaceText;
+
     public Asta4dProjectPropertyPage() {
         super();
         noDefaultButton();
@@ -50,7 +52,9 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
         layout.verticalSpacing = 0;
         comp.setLayout(layout);
 
-        createSnippetPrefixEditor(comp);
+        createTemplateInfoEditor(comp);
+
+        createSnippetInfoEditor(comp);
 
         loadPrefs();
         registerUpdateListeners();
@@ -79,9 +83,27 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
         return true;
     }
 
-    private void createSnippetPrefixEditor(Composite parent) {
+    private void createTemplateInfoEditor(Composite parent) {
         Group group = new Group(parent, SWT.NONE);
-        group.setText("Prefixes for snippet class search");
+        group.setText("Template");
+        group.setLayoutData(createHFillGridData());
+
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 2;
+        group.setLayout(layout);
+
+        Label label = new Label(group, NONE);
+        label.setLayoutData(new GridData(GridData.FILL));
+        label.setText("tag namespace:");
+
+        namespaceText = new Text(group, SWT.SINGLE | SWT.BORDER);
+        GridData griddata = new GridData(GridData.FILL_HORIZONTAL);
+        namespaceText.setLayoutData(griddata);
+    }
+
+    private void createSnippetInfoEditor(Composite parent) {
+        Group group = new Group(parent, SWT.NONE);
+        group.setText("Snippet");
         group.setLayoutData(createHFillGridData());
 
         GridLayout layout = new GridLayout();
@@ -90,7 +112,7 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
 
         Label label = new Label(group, NONE);
         label.setLayoutData(createHFillGridData());
-        label.setText("Split by row, ending with dot if necessary:\n");
+        label.setText("Prefixes for snippet class search, split by row, ending with dot if necessary:\n");
 
         prefixText = new Text(group, SWT.MULTI | SWT.BORDER);
         GridData griddata = new GridData(GridData.FILL_BOTH);
@@ -115,9 +137,15 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
         prefixText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                String s = prefixText.getText();
+                String s = prefixText.getText().trim();
                 s = StringUtils.replace(s, "\r", "");
                 editingProperties.setSnippetPrefixes(s.split("\n"));
+            }
+        });
+        namespaceText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                editingProperties.setNamespace(namespaceText.getText().trim());
             }
         });
     }
@@ -126,6 +154,7 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
         unChangedProperties = this.pref.loadProperties();
         editingProperties = unChangedProperties.clone();
         prefixText.setText(StringUtils.join(editingProperties.getSnippetPrefixes(), "\n"));
+        namespaceText.setText(editingProperties.getNamespace());
     }
 
     private void storePrefs() {

@@ -53,14 +53,16 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
             return null;
         }
 
+        Asta4dProperties properties = Asta4dPreference.get(prj).loadProperties();
+
         // at first try to handle selected attribute value
         Attr currentAttr = getAttrByOffset(currentNode, region.getOffset());
         IDOMAttr attr = (IDOMAttr) currentAttr;
         if (currentAttr != null && region.getOffset() >= attr.getValueRegionStartOffset()) {
-            if (isLinkableAttr(currentNode, currentAttr)) {
+            if (isLinkableAttr(currentNode, currentAttr, properties)) {
                 IRegion hyperlinkRegion = getHyperlinkRegion(currentAttr);
                 IHyperlink hyperLink = createHyperlink(prj, currentAttr.getName(), currentAttr.getNodeValue(), currentNode,
-                        currentNode.getParentNode(), doc, textViewer, hyperlinkRegion, region);
+                        currentNode.getParentNode(), doc, textViewer, hyperlinkRegion, region, properties);
                 if (hyperLink != null) {
                     return new IHyperlink[] { hyperLink };
                 }
@@ -89,11 +91,12 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
         return null;
     }
 
-    public boolean isLinkableAttr(Node node, Attr attr) {
-        if (node.getNodeName().startsWith("afd:")) {
+    public boolean isLinkableAttr(Node node, Attr attr, Asta4dProperties properties) {
+        String ns = properties.getNamespace().toLowerCase();
+        if (node.getNodeName().toLowerCase().startsWith(ns)) {
             return attr.getName().equalsIgnoreCase("render");
         } else {
-            return attr.getName().equalsIgnoreCase("afd:render");
+            return attr.getName().equalsIgnoreCase(ns + ":render");
         }
     }
 
@@ -132,7 +135,7 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
     }
 
     public IHyperlink createHyperlink(IProject prj, String name, String target, Node node, Node parentNode, IDocument document,
-            ITextViewer textViewer, IRegion hyperlinkRegion, IRegion cursor) {
+            ITextViewer textViewer, IRegion hyperlinkRegion, IRegion cursor, Asta4dProperties properties) {
         String[] declareInfo = target.split("::|:");
         String snippetClass, snippetMethod;
         if (declareInfo.length < 2) {
@@ -142,7 +145,7 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector {
             snippetClass = declareInfo[0];
             snippetMethod = declareInfo[1];
         }
-        Asta4dProperties properties = Asta4dPreference.get(prj).loadProperties();
+
         for (String prefix : properties.getSnippetPrefixes()) {
             String searchName = prefix + snippetClass;
             IType type = JdtUtils.getJavaType(prj, searchName);
