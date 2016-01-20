@@ -2,10 +2,13 @@
 
 This project is for the purpose of better developing support for Asta4d users, contains following features:
 
-- snippet method navigation in template file (DONE)
+- snippet method navigation in template file
+    - link navigation (DONE)
+    - show java source by hovering (DEVELOPING)
 - extension parent navigation (TODO)
 - embed target navigation (TODO)
-- find reference for snippet method to include snippet declaration (DEVELOPING)
+- find snippet method references in template file (DONE)
+    - select method -> right click -> Asta4D -> Snippet In Templates...
 
 More features can be required :-)
 
