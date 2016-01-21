@@ -38,12 +38,15 @@
        </hyperlinkDetector>
     </extension>
     
-    <!--extension point="org.eclipse.wst.sse.ui.editorConfiguration">
+    <extension point="org.eclipse.wst.sse.ui.editorConfiguration">
+        <sourceViewerConfiguration
+            class="com.astamuse.asta4d.ide.eclipse.hover.Asta4dTextViewerConfiguration"
+            target="org.eclipse.wst.html.core.htmlsource.source" />
         <documentationTextHover
-            class="com.astamuse.asta4d.ide.eclipse.Asta4dHyperLinkHover"
-            target="org.eclipse.wst.html.core.htmlsource.source">
+            class="com.astamuse.asta4d.ide.eclipse.hover.Asta4dHyperLinkHover"
+            target="org.eclipse.wst.html.HTML_DEFAULT">
         </documentationTextHover>
-    </extension-->
+    </extension>
     
     <!--
     <extension
