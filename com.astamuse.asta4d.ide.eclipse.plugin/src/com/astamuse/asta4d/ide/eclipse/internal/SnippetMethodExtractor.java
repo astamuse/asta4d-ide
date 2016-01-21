@@ -38,6 +38,8 @@ public interface SnippetMethodExtractor {
 
     }
 
+    public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory();
+
     default MethodInfo detectSnippetMethod(ITextViewer textViewer, IRegion region) {
         IDocument doc = textViewer.getDocument();
 
@@ -141,9 +143,10 @@ public interface SnippetMethodExtractor {
             snippetMethod = declareInfo[1];
         }
 
-        for (String prefix : properties.getSnippetPrefixes()) {
-            String searchName = prefix + snippetClass;
-            IType type = JdtUtils.getJavaType(prj, searchName);
+        String[] searchClasses = getSnippetMethodnameConvertorFactory().getConvertor(properties).convert(snippetClass, true);
+
+        for (String cls : searchClasses) {
+            IType type = JdtUtils.getJavaType(prj, cls);
             if (type == null) {
                 continue;
             }

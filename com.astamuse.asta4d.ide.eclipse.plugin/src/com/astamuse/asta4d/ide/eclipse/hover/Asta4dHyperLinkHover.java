@@ -7,6 +7,8 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 
 import com.astamuse.asta4d.ide.eclipse.internal.SnippetMethodExtractor;
+import com.astamuse.asta4d.ide.eclipse.internal.SnippetMethodNameConvertorFactory;
+import com.astamuse.asta4d.ide.eclipse.util.SnippetMethodNameConvertorFactoryImpl;
 
 public class Asta4dHyperLinkHover extends JavaSourceHover implements SnippetMethodExtractor {
 
@@ -18,6 +20,11 @@ public class Asta4dHyperLinkHover extends JavaSourceHover implements SnippetMeth
             super(offset, length);
         }
 
+    }
+
+    @Override
+    public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory() {
+        return new SnippetMethodNameConvertorFactoryImpl();
     }
 
     @Override

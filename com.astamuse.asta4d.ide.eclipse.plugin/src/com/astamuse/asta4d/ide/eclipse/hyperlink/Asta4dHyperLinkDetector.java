@@ -12,11 +12,18 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.w3c.dom.Node;
 
 import com.astamuse.asta4d.ide.eclipse.internal.SnippetMethodExtractor;
+import com.astamuse.asta4d.ide.eclipse.internal.SnippetMethodNameConvertorFactory;
 import com.astamuse.asta4d.ide.eclipse.property.Asta4dProperties;
 import com.astamuse.asta4d.ide.eclipse.util.Introspector;
 import com.astamuse.asta4d.ide.eclipse.util.JdtUtils;
+import com.astamuse.asta4d.ide.eclipse.util.SnippetMethodNameConvertorFactoryImpl;
 
 public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector implements SnippetMethodExtractor {
+
+    @Override
+    public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory() {
+        return new SnippetMethodNameConvertorFactoryImpl();
+    }
 
     @Override
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {

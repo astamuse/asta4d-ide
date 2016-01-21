@@ -27,8 +27,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 
+import com.astamuse.asta4d.ide.eclipse.internal.SnippetMethodNameConvertorFactory;
 import com.astamuse.asta4d.ide.eclipse.property.Asta4dPreference;
 import com.astamuse.asta4d.ide.eclipse.property.Asta4dProperties;
+import com.astamuse.asta4d.ide.eclipse.util.SnippetMethodNameConvertorFactoryImpl;
 
 public class Asta4dSearchAction implements IEditorActionDelegate {
 
@@ -40,6 +42,8 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
     private Shell shell;
 
     private JavaEditor editor;
+
+    private SnippetMethodNameConvertorFactory snippetMethodNameConvertorFactory = new SnippetMethodNameConvertorFactoryImpl();
 
     @Override
     public void run(IAction action) {
@@ -111,20 +115,18 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
 
         Asta4dPreference pref = Asta4dPreference.get(project);
         Asta4dProperties props = pref.loadProperties();
-        String[] snippetPrefixes = props.getSnippetPrefixes();
 
         String holdingCls = method.getDeclaringType().getFullyQualifiedName();
         String methodName = method.getElementName();
 
+        String[] searchNames = snippetMethodNameConvertorFactory.getConvertor(props).convert(holdingCls, false);
+
         List<String> patterns = new LinkedList<>();
-        String searchName;
-        for (String prefix : snippetPrefixes) {
-            if (holdingCls.startsWith(prefix)) {
-                searchName = holdingCls.substring(prefix.length());
-                patterns.add(searchName + ":{1,2}" + methodName);
-                if (methodName.equals("render")) {
-                    patterns.add(searchName);
-                }
+        for (String searchName : searchNames) {
+            searchName = StringUtils.replace(searchName, ".", "\\.");
+            patterns.add(searchName + ":{1,2}" + methodName);
+            if (methodName.equals("render")) {
+                patterns.add(searchName);
             }
         }
 
@@ -133,7 +135,9 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
             searchDeclaring = "(" + searchDeclaring + ")";
         }
 
-        String pattern = "render=[\"']" + searchDeclaring + "[\"']";
+        String pattern = "render=[\"'](" + searchDeclaring + ")[\"']";
+
+        System.out.println(pattern);
 
         SearchPattern sp = new SearchPattern();
         sp.regex = pattern;

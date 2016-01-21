@@ -7,8 +7,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -26,9 +29,15 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
 
     private Composite comp;
 
+    private Text namespaceText;
+
+    private Button prefixRadio;
+
     private Text prefixText;
 
-    private Text namespaceText;
+    private Button funcRadio;
+
+    private Text funcText;
 
     public Asta4dProjectPropertyPage() {
         super();
@@ -110,14 +119,27 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
         layout.numColumns = 1;
         group.setLayout(layout);
 
-        Label label = new Label(group, NONE);
-        label.setLayoutData(createHFillGridData());
-        label.setText("Prefixes for snippet class search, split by row, ending with dot if necessary:\n");
+        {
+            prefixRadio = new Button(group, SWT.RADIO);
+            prefixRadio.setLayoutData(createHFillGridData());
+            prefixRadio.setText("Prefixes for snippet class search, split by row, ending with dot if necessary:\n");
 
-        prefixText = new Text(group, SWT.MULTI | SWT.BORDER);
-        GridData griddata = new GridData(GridData.FILL_BOTH);
-        griddata.heightHint = 180;
-        prefixText.setLayoutData(griddata);
+            prefixText = new Text(group, SWT.MULTI | SWT.BORDER);
+            GridData griddata = new GridData(GridData.FILL_BOTH);
+            griddata.heightHint = 100;
+            prefixText.setLayoutData(griddata);
+        }
+
+        {
+            funcRadio = new Button(group, SWT.RADIO);
+            funcRadio.setLayoutData(createHFillGridData());
+            funcRadio.setText("Javascript function to convert between snippet class name and declared snippet name");
+
+            funcText = new Text(group, SWT.MULTI | SWT.BORDER);
+            GridData griddata = new GridData(GridData.FILL_BOTH);
+            griddata.heightHint = 150;
+            funcText.setLayoutData(griddata);
+        }
     }
 
     @Override
@@ -148,13 +170,60 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
                 editingProperties.setNamespace(namespaceText.getText().trim());
             }
         });
+
+        prefixRadio.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                editingProperties.setSnippetPrefixesEnabled(true);
+                editingProperties.setSnippetConvertFuncEnabled(false);
+                performUIEnabling();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                performUIEnabling();
+            }
+        });
+
+        funcRadio.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                editingProperties.setSnippetPrefixesEnabled(false);
+                editingProperties.setSnippetConvertFuncEnabled(true);
+                performUIEnabling();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                performUIEnabling();
+            }
+        });
+    }
+
+    private void performUIEnabling() {
+        if (prefixRadio.getSelection()) {
+            prefixText.setEnabled(true);
+            funcText.setEnabled(false);
+        } else {
+            prefixText.setEnabled(false);
+            funcText.setEnabled(true);
+        }
     }
 
     private void loadPrefs() {
         unChangedProperties = this.pref.loadProperties();
         editingProperties = unChangedProperties.clone();
-        prefixText.setText(StringUtils.join(editingProperties.getSnippetPrefixes(), "\n"));
+
         namespaceText.setText(editingProperties.getNamespace());
+
+        prefixRadio.setSelection(editingProperties.isSnippetPrefixesEnabled());
+        prefixText.setText(StringUtils.join(editingProperties.getSnippetPrefixes(), "\n"));
+
+        funcRadio.setSelection(editingProperties.isSnippetConvertFuncEnabled());
+        funcText.setText(editingProperties.getSnippetConvertFunc());
+
+        performUIEnabling();
+
     }
 
     private void storePrefs() {
