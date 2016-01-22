@@ -24,7 +24,7 @@ public class Asta4dHyperLinkHover extends JavaSourceHover implements SnippetMeth
 
     @Override
     public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory() {
-        return new SnippetMethodNameConvertorFactoryImpl();
+        return SnippetMethodNameConvertorFactoryImpl.getInstance();
     }
 
     @Override

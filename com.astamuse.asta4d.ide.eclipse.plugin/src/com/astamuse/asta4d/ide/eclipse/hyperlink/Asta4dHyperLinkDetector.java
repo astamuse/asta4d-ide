@@ -22,7 +22,7 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector implement
 
     @Override
     public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory() {
-        return new SnippetMethodNameConvertorFactoryImpl();
+        return SnippetMethodNameConvertorFactoryImpl.getInstance();
     }
 
     @Override

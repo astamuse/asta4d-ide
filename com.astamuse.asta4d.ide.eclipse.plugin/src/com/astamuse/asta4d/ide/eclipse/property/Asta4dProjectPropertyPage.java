@@ -9,11 +9,13 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -135,10 +137,32 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
             funcRadio.setLayoutData(createHFillGridData());
             funcRadio.setText("Javascript function to convert between snippet class name and declared snippet name");
 
-            funcText = new Text(group, SWT.MULTI | SWT.BORDER);
+            Text descriptionText = new Text(group, SWT.WRAP);
+            descriptionText.setLayoutData(createHFillGridData());
+            //@formatter:off
+            String description = ""
+                    + "/** \n"
+                    + " * NOTICE: Function name must be convert. \n"
+                    + " * @parameter \n"
+                    + " *   name: to search the name of selection \n"
+                    + " *   nameToCls: true - convert from delcared snippet name to full qualification class name \n"
+                    + " *              false - convert from full qualification class name to declared snippet name \n"
+                    + " * @return a string array representing the converted result \n"
+                    + " */ \n"
+                    + Asta4dPreference.DEFAULT_FUNC;
+            //@formatter:on
+            descriptionText.setText(description);
+            descriptionText.setEditable(false);
+            Display display = Display.getCurrent();
+            Color gray = display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
+            descriptionText.setForeground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+            // descriptionText.setBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+
+            funcText = new Text(group, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
             GridData griddata = new GridData(GridData.FILL_BOTH);
             griddata.heightHint = 150;
             funcText.setLayoutData(griddata);
+
         }
     }
 
@@ -156,14 +180,6 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
     }
 
     private void registerUpdateListeners() {
-        prefixText.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String s = prefixText.getText().trim();
-                s = StringUtils.replace(s, "\r", "");
-                editingProperties.setSnippetPrefixes(s.split("\n"));
-            }
-        });
         namespaceText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
@@ -185,6 +201,15 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
             }
         });
 
+        prefixText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String s = prefixText.getText().trim();
+                s = StringUtils.replace(s, "\r", "");
+                editingProperties.setSnippetPrefixes(s.split("\n"));
+            }
+        });
+
         funcRadio.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -196,6 +221,13 @@ public class Asta4dProjectPropertyPage extends PropertyPage {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 performUIEnabling();
+            }
+        });
+
+        funcText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                editingProperties.setSnippetConvertFunc(funcText.getText());
             }
         });
     }

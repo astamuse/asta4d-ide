@@ -19,8 +19,12 @@ public class Asta4dPreference {
 
     private static final String DEFAULT_FUNC_ENABLED = "false";
 
-    private static final String DEFAULT_FUNC = "  return;";
-
+    //@formatter:off
+    public static final String DEFAULT_FUNC = ""
+                                    + "function convert(name, nameToCls){ \n"
+                                    + "  return [name];\n"
+                                    + "}\n";
+    //@formatter:on
     private IEclipsePreferences pref;
 
     private Asta4dPreference(IEclipsePreferences pref) {

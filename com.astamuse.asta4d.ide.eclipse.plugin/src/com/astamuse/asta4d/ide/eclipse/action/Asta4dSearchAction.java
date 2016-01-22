@@ -43,7 +43,7 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
 
     private JavaEditor editor;
 
-    private SnippetMethodNameConvertorFactory snippetMethodNameConvertorFactory = new SnippetMethodNameConvertorFactoryImpl();
+    private SnippetMethodNameConvertorFactory snippetMethodNameConvertorFactory = SnippetMethodNameConvertorFactoryImpl.getInstance();
 
     @Override
     public void run(IAction action) {
@@ -137,7 +137,7 @@ public class Asta4dSearchAction implements IEditorActionDelegate {
 
         String pattern = "render=[\"'](" + searchDeclaring + ")[\"']";
 
-        System.out.println(pattern);
+        // System.out.println(pattern);
 
         SearchPattern sp = new SearchPattern();
         sp.regex = pattern;
