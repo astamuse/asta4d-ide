@@ -36,6 +36,10 @@ public interface SnippetMethodExtractor {
             this.currentAttr = currentAttr;
         }
 
+        public boolean isSnippetMethodExists() {
+            return this.currentAttr != null && this.method != null;
+        }
+
     }
 
     public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory();

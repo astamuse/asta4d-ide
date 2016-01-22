@@ -27,6 +27,20 @@ public class Asta4dHyperLinkHover extends JavaSourceHover implements SnippetMeth
         return SnippetMethodNameConvertorFactoryImpl.getInstance();
     }
 
+    public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion) {
+        if (hoverRegion instanceof SnippetMethodRegion) {
+            MethodInfo methodInfo = ((SnippetMethodRegion) hoverRegion).methodInfo;
+            if (methodInfo != null) {
+                if (methodInfo.isSnippetMethodExists()) {
+                    // OK
+                } else {
+                    return "Snippet Method does not exist";
+                }
+            }
+        }
+        return super.getHoverInfo2(textViewer, hoverRegion);
+    }
+
     @Override
     protected IJavaElement[] getJavaElementsAt(ITextViewer textViewer, IRegion hoverRegion) {
         MethodInfo methodInfo;
