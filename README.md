@@ -4,7 +4,7 @@ This project is for the purpose of better developing support for Asta4d users, c
 
 - snippet method navigation in template file
     - link navigation (DONE)
-    - show java source by hovering (DEVELOPING)
+    - show java source by hovering (DONE)
 - extension parent navigation (TODO)
 - embed target navigation (TODO)
 - find snippet method references in template file (DONE)
@@ -15,6 +15,14 @@ More features can be required :-)
 # Update site
 
 https://astamuse.github.io/asta4d-ide/updatesite
+
+# Configuration
+
+Snippet method converting rules must be configured to perform snippet method search and navigation.
+
+- select project
+- right click -> Asta4D
+- configure snippet method converting rules
 
 ## LICENSE
 
