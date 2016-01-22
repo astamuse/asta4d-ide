@@ -32,6 +32,8 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector implement
 
     private IStatusLineManager statusLineManager = null;
 
+    private UIJob runningStatusJob = null;
+
     @Override
     public SnippetMethodNameConvertorFactory getSnippetMethodnameConvertorFactory() {
         return SnippetMethodNameConvertorFactoryImpl.getInstance();
@@ -54,16 +56,25 @@ public class Asta4dHyperLinkDetector extends AbstractHyperlinkDetector implement
         }
 
         if (!methodInfo.isSnippetMethodExists()) {
+            if (runningStatusJob != null) {
+                // since both are in ui thread, we should be able to cancel it, but we do not matter even it fails to cancel.
+                runningStatusJob.cancel();
+                runningStatusJob = null;
+            }
             statusLineManager.setErrorMessage("Snippet method does not exist");
             UIJob job = new UIJob("") {
                 @Override
                 public IStatus runInUIThread(IProgressMonitor monitor) {
                     statusLineManager.setErrorMessage(null);
+                    runningStatusJob = null;
                     return Status.OK_STATUS;
                 }
             };
+            runningStatusJob = job;
+
             job.setPriority(UIJob.DECORATE);// lowest priority
             job.schedule(10 * 1000);// wait 10s
+
         }
 
         // we always return a valid link to show the link lookandfeel
